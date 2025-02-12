@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPT Summarizer</title>
+</head>
+<body>
+    <h1>Upload Your PPT for Summarization</h1>
+    
+    <form id="upload-form" method="POST" enctype="multipart/form-data">
+        <label for="ppt-file">Choose a PPT file:</label>
+        <input type="file" id="ppt-file" name="file" accept=".pptx">
+        <br><br>
+        <button type="submit">Upload and Summarize</button>
+    </form>
+
+    <div id="response">
+        <h2>Summary:</h2>
+        <p id="summary"></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('ppt-file');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/summarize', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    const result = await response.json();
+                    document.getElementById('summary').innerText = result.summary || 'Error: Unable to summarize.';
+                } catch (error) {
+                    console.error('Error:', error);
+                    document.getElementById('summary').innerText = 'An error occurred while processing the file.';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
